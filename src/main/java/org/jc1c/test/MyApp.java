@@ -10,21 +10,26 @@ public class MyApp {
 
     public static void main(String[] args) throws IOException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
 
-        Class<?> cls = MyAppHandler.class;
+        new JServer.Builder().build().start();
 
-        Object obj = cls.getDeclaredConstructor().newInstance();
+//        JServer jServer = new JServer();
+//        jServer.addHandlers(MyAppHandler.class);
 
-        Method[] methods = cls.getDeclaredMethods();
-        for (Method method : methods) {
-            System.out.println(method.getName());
-            try {
-                method.invoke(obj);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            }
-        }
+//        Class<?> cls = MyAppHandler.class;
+//
+//        Object obj = cls.getDeclaredConstructor().newInstance();
+//
+//        Method[] methods = cls.getDeclaredMethods();
+//        for (Method method : methods) {
+//            System.out.println(method.getName());
+//            try {
+//                method.invoke(obj);
+//            } catch (IllegalAccessException e) {
+//                e.printStackTrace();
+//            } catch (InvocationTargetException e) {
+//                e.printStackTrace();
+//            }
+//        }
 
     }
 
