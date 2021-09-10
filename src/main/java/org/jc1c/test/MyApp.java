@@ -10,7 +10,15 @@ public class MyApp {
 
     public static void main(String[] args) throws IOException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
 
-        new JServer.Builder().build().start();
+        new JServer.Builder()
+                .withHostname("localhost")
+                .withPort(8080)
+                .withBacklog(3)
+                .withHandler(MyAppHandler.class)
+                .build()
+                .start();
+
+//        new MyAppHandler().getClass()
 
 //        JServer jServer = new JServer();
 //        jServer.addHandlers(MyAppHandler.class);

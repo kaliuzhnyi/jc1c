@@ -20,7 +20,7 @@ public class JServer {
     private Integer backlog;
 
     private HttpServer httpServer;
-    private Set<Type> handlers;
+    private Set<Class> handlers;
 
     private JServer() {
         hostname = DEFAULT_HTTP_SERVER_HOSTNAME;
@@ -45,6 +45,11 @@ public class JServer {
             jServer = JServerHolder.instance;
         }
 
+        public Builder withHostname(String hostname) {
+            jServer.hostname = hostname;
+            return this;
+        }
+
         public Builder withPort(Integer port) {
             jServer.port = port;
             return this;
@@ -55,8 +60,8 @@ public class JServer {
             return this;
         }
 
-        public Builder withHandler(Type type) {
-            jServer.handlers.add(type);
+        public Builder withHandler(Class cls) {
+            jServer.handlers.add(cls);
             return this;
         }
 
@@ -72,6 +77,10 @@ public class JServer {
 
     public boolean hasHandlers() {
         return !handlers.isEmpty();
+    }
+
+    public Set<Class> getHandlers() {
+        return handlers;
     }
 
     public void start() {
