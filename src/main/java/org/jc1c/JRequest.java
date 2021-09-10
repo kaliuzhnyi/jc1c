@@ -54,10 +54,10 @@ public class JRequest {
         parameters.add(parameter);
     }
 
-    static class JRequestTypeAdapter implements JsonDeserializer {
+    static class JRequestTypeAdapter implements JsonDeserializer<JRequest> {
 
         @Override
-        public Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        public JRequest deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 
             JRequest request = new JRequest();
 
