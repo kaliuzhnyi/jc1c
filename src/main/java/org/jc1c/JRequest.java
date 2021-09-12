@@ -56,7 +56,8 @@ public class JRequest {
         parameters.add(parameter);
     }
 
-    static class JRequestTypeAdapter implements JsonDeserializer<JRequest> {
+
+    private static class JRequestTypeAdapter implements JsonDeserializer<JRequest> {
 
         @Override
         public JRequest deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
