@@ -17,6 +17,29 @@ public class JContextHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
 
+        JMethods jMethod = JMethods.valueOf(exchange.getRequestMethod());
+        switch (jMethod) {
+            case GET:
+                handleGet(exchange);
+                break;
+            case POST:
+                handlePost(exchange);
+                break;
+            case DELETE:
+                handleDelete(exchange);
+                break;
+            default:
+                handleUnknown(exchange);
+        }
+
+    }
+
+    public void handleGet(HttpExchange exchange) throws IOException {
+        sendSimpleResponse(exchange, 200);
+    }
+
+    public void handlePost(HttpExchange exchange) throws IOException {
+
         String requestBody = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
         JRequest request = JRequest.fromJson(requestBody);
 
@@ -65,6 +88,18 @@ public class JContextHandler implements HttpHandler {
         sendResponseMethodNotFound(exchange);
 
     }
+
+    public void handleDelete(HttpExchange exchange) throws IOException {
+
+        JServer.getInstance().stop();
+        sendSimpleResponse(exchange, 200);
+
+    }
+
+    public void handleUnknown(HttpExchange exchange) throws IOException {
+        sendSimpleResponse(exchange, 405);
+    }
+
 
     private void sendResponseMethodNotFound(HttpExchange exchange) throws IOException {
         sendSimpleResponse(exchange, 404);
