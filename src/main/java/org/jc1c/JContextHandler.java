@@ -2,12 +2,15 @@ package org.jc1c;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import org.jc1c.annotations.JHandler;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class JContextHandler implements HttpHandler {
 
@@ -23,30 +26,60 @@ public class JContextHandler implements HttpHandler {
         }
 
         JServer jServer = JServer.getInstance();
-        if (!jServer.hasHandlers()) {
+        if (!jServer.hasHandlerControllers()) {
             sendResponseMethodNotFound(exchange);
             return;
         }
 
-        for (Class handlersController : jServer.getHandlers()) {
+        for (Class<?> handlersController : jServer.getHandlerControllers()) {
 
-            Method[] methodHandlers = (Method[]) Arrays.stream(handlersController.getDeclaredMethods())
-                    .filter(method -> {return true;})
-                    .toArray();
+            List<Method> methods = Arrays.stream(handlersController.getDeclaredMethods())
+                    .filter(method -> {
+                        JHandler jHandler = method.getAnnotation(JHandler.class);
+                        return !Objects.isNull(jHandler)
+                                && jHandler.methodName().equalsIgnoreCase(request.getMethodName())
+                                && method.getParameterCount() == request.getParametersCount();
+                    }).collect(Collectors.toList());
 
-            if (!(methodHandlers.length > 0)) {
+            if (!(methods.size() > 0)) {
                 continue;
             }
 
-//            Method methodHandler = methodHandlers[0];
-//            methodHandler.invoke();
+            try {
+
+                Object obj = handlersController.getDeclaredConstructor().newInstance();
+                Method method = methods.get(0);
+                Object result = method.invoke(obj, request.getParameters().toArray());
+                System.out.println(result);
+                sendResponseMethodInvoked(exchange);
+                return;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                sendResponseMethodNotCreated(exchange);
+                return;
+            }
 
         }
+
+        sendResponseMethodNotFound(exchange);
 
     }
 
     private void sendResponseMethodNotFound(HttpExchange exchange) throws IOException {
-        exchange.sendResponseHeaders(404, 0);
+        sendSimpleResponse(exchange, 404);
+    }
+
+    private void sendResponseMethodNotCreated(HttpExchange exchange) throws IOException {
+        sendSimpleResponse(exchange, 500);
+    }
+
+    private void sendResponseMethodInvoked(HttpExchange exchange) throws IOException {
+        sendSimpleResponse(exchange, 200);
+    }
+
+    private void sendSimpleResponse(HttpExchange exchange, Integer code) throws IOException {
+        exchange.sendResponseHeaders(code, 0);
         exchange.close();
     }
 

@@ -12,11 +12,9 @@ public class JRequest {
     private String methodName;
     private List<Object> parameters;
 
-    {
-        parameters = new ArrayList<>();
-    }
 
     private JRequest() {
+        parameters = new ArrayList<>();
     }
 
     public static JRequest fromJson(String json) {
@@ -42,8 +40,12 @@ public class JRequest {
         return parameters;
     }
 
+    public Integer getParametersCount() {
+        return parameters.size();
+    }
+
     public boolean hasParameters() {
-        return !Objects.isNull(parameters) && !parameters.isEmpty();
+        return getParametersCount() > 0;
     }
 
     private void setParameters(List<Object> parameters) {
@@ -66,8 +68,8 @@ public class JRequest {
             }
 
             JsonObject jsonObject = jsonElement.getAsJsonObject();
-            if (jsonObject.has("methodName")) {
-                request.setMethodName(jsonObject.get("methodName").getAsString());
+            if (jsonObject.has("method")) {
+                request.setMethodName(jsonObject.get("method").getAsString());
             }
 
             if (jsonObject.has("parameters")
