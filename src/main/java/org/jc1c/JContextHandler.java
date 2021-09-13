@@ -72,8 +72,14 @@ public class JContextHandler implements HttpHandler {
 
                 Object obj = handlersController.getDeclaredConstructor().newInstance();
                 Method method = methods.get(0);
+
                 Object result = method.invoke(obj, request.getParameters().toArray());
-                System.out.println(result);
+                if (!Objects.isNull(result)) {
+                    JResponse jResponse = JResponse.builder()
+                            .withParameter("", "")
+                            .build();
+                }
+
                 sendResponseMethodInvoked(exchange);
                 return;
 

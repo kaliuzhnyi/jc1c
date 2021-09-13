@@ -1,9 +1,11 @@
 package org.jc1c.test;
 
+import org.jc1c.JResponse;
 import org.jc1c.JServer;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
 
 public class MyApp {
 

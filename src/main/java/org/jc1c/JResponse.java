@@ -1,24 +1,21 @@
 package org.jc1c;
 
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
+import com.google.gson.*;
 
 import java.lang.reflect.Type;
-import java.security.PublicKey;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class JResponse {
 
-    private ArrayList<Object> parameters;
+    private HashMap<String, Object> parameters;
 
     public JResponse() {
-        parameters = new ArrayList<>();
+        parameters = new HashMap<>(1);
     }
 
 
-    public Builder builder() {
+    public static Builder builder() {
         return new Builder();
     }
 
@@ -30,8 +27,8 @@ public class JResponse {
             jResponse = new JResponse();
         }
 
-        public Builder withParameter(Object parameter) {
-            jResponse.addParameters(parameter);
+        public Builder withParameter(String key, Object value) {
+            jResponse.addParameters(key, value);
             return this;
         }
 
@@ -42,7 +39,7 @@ public class JResponse {
     }
 
 
-    public ArrayList<Object> getParameters() {
+    public HashMap<String, Object> getParameters() {
         return parameters;
     }
 
@@ -50,8 +47,8 @@ public class JResponse {
         return !parameters.isEmpty();
     }
 
-    public void addParameters(Object parameter) {
-        parameters.add(parameter);
+    public void addParameters(String key, Object value) {
+        parameters.put(key, value);
     }
 
 
@@ -66,7 +63,33 @@ public class JResponse {
 
         @Override
         public JsonElement serialize(JResponse jResponse, Type type, JsonSerializationContext jsonSerializationContext) {
-            return null;
+
+            JsonObject jsonObject = new JsonObject();
+
+            JsonElement resultJsonObject = JsonNull.INSTANCE;
+            if (jResponse.hasParameters()) {
+                JsonObject parametersJsonObject = new JsonObject();
+                for (Map.Entry<String, Object> entry : jResponse.getParameters().entrySet()) {
+
+                    Object value = entry.getValue();
+                    if (value instanceof Boolean) {
+                        parametersJsonObject.addProperty(entry.getKey(), (Boolean) entry.getValue());
+                    } else if (value instanceof Number) {
+                        parametersJsonObject.addProperty(entry.getKey(), (Number) entry.getValue());
+                    } else if (value instanceof String) {
+                        parametersJsonObject.addProperty(entry.getKey(), (String) entry.getValue());
+                    } else if (value instanceof JResponse) {
+                        parametersJsonObject.add(entry.getKey(), jsonSerializationContext.serialize(value));
+                    }
+
+                }
+
+                resultJsonObject = parametersJsonObject;
+            }
+
+            jsonObject.add("result", resultJsonObject);
+
+            return jsonObject;
         }
 
     }

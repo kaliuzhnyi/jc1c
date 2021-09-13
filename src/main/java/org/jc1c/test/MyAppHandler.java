@@ -8,12 +8,13 @@ public class MyAppHandler {
 
     @JHandler(methodName = "test")
     public void test() {
-        System.out.println("test method, do smth");
+        System.out.println("test method, without result");
     }
 
     @JHandler(methodName = "test with result")
     public String testWithResult() {
-        return "hello, i am result";
+        System.out.println("test method, with result");
+        return "test method, with result";
     }
 
 }
