@@ -5,9 +5,8 @@ import com.google.gson.*;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-public class JRequest {
+public final class JRequest {
 
     private String methodName;
     private List<Object> parameters;
@@ -17,12 +16,6 @@ public class JRequest {
         parameters = new ArrayList<>();
     }
 
-    public static JRequest fromJson(String json) {
-        return new GsonBuilder()
-                .registerTypeAdapter(JRequest.class, new JRequestTypeAdapter())
-                .create()
-                .fromJson(json, JRequest.class);
-    }
 
     public String getMethodName() {
         return methodName;
@@ -36,26 +29,37 @@ public class JRequest {
         this.methodName = methodName;
     }
 
+
     public List<Object> getParameters() {
         return parameters;
-    }
-
-    public Integer getParametersCount() {
-        return parameters.size();
     }
 
     public boolean hasParameters() {
         return getParametersCount() > 0;
     }
 
-    private void setParameters(List<Object> parameters) {
-        this.parameters = parameters;
-    }
-
     private void addParameters(Object parameter) {
         parameters.add(parameter);
     }
 
+
+    public Integer getParametersCount() {
+        return parameters.size();
+    }
+
+    public List<Class<?>> getParameterTypes() {
+        List<Class<?>> result = new ArrayList<>();
+        getParameters().stream().forEach(parameter -> result.add(parameter.getClass()));
+        return result;
+    }
+
+    public static JRequest fromJson(String json) {
+        return new GsonBuilder()
+                .registerTypeAdapter(JRequest.class, new JRequestTypeAdapter())
+                .serializeNulls()
+                .create()
+                .fromJson(json, JRequest.class);
+    }
 
     private static class JRequestTypeAdapter implements JsonDeserializer<JRequest> {
 

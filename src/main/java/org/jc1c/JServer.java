@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Executors;
 
-public class JServer {
+public final class JServer {
 
     private static final String DEFAULT_HTTP_SERVER_HOSTNAME = "localhost";
     private static final Integer DEFAULT_HTTP_SERVER_PORT = 8080;

@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpHandler;
 import org.jc1c.annotations.JHandler;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class JContextHandler implements HttpHandler {
+public final class JContextHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
@@ -35,7 +36,7 @@ public class JContextHandler implements HttpHandler {
     }
 
     public void handleGet(HttpExchange exchange) throws IOException {
-        sendSimpleResponse(exchange, 200);
+        sendResponse(exchange, 200);
     }
 
     public void handlePost(HttpExchange exchange) throws IOException {
@@ -61,7 +62,8 @@ public class JContextHandler implements HttpHandler {
                         JHandler jHandler = method.getAnnotation(JHandler.class);
                         return !Objects.isNull(jHandler)
                                 && jHandler.methodName().equalsIgnoreCase(request.getMethodName())
-                                && method.getParameterCount() == request.getParametersCount();
+                                && method.getParameterCount() == request.getParametersCount()
+                                && Arrays.equals(method.getParameterTypes(), request.getParameterTypes().toArray());
                     }).collect(Collectors.toList());
 
             if (!(methods.size() > 0)) {
@@ -74,13 +76,8 @@ public class JContextHandler implements HttpHandler {
                 Method method = methods.get(0);
 
                 Object result = method.invoke(obj, request.getParameters().toArray());
-                if (!Objects.isNull(result)) {
-                    JResponse jResponse = JResponse.builder()
-                            .withParameter("", "")
-                            .build();
-                }
-
-                sendResponseMethodInvoked(exchange);
+                JResponse jResponse = JResponse.builder().withParameter("result", result).build();
+                sendResponse(exchange, 200, jResponse.toJson());
                 return;
 
             } catch (Exception e) {
@@ -96,30 +93,35 @@ public class JContextHandler implements HttpHandler {
     }
 
     public void handleDelete(HttpExchange exchange) throws IOException {
-
+        sendResponse(exchange, 200);
         JServer.getInstance().stop();
-        sendSimpleResponse(exchange, 200);
-
     }
 
     public void handleUnknown(HttpExchange exchange) throws IOException {
-        sendSimpleResponse(exchange, 405);
+        sendResponse(exchange, 405);
     }
 
 
     private void sendResponseMethodNotFound(HttpExchange exchange) throws IOException {
-        sendSimpleResponse(exchange, 404);
+        sendResponse(exchange, 404);
     }
 
     private void sendResponseMethodNotCreated(HttpExchange exchange) throws IOException {
-        sendSimpleResponse(exchange, 500);
+        sendResponse(exchange, 500);
     }
 
     private void sendResponseMethodInvoked(HttpExchange exchange) throws IOException {
-        sendSimpleResponse(exchange, 200);
+        sendResponse(exchange, 200);
     }
 
-    private void sendSimpleResponse(HttpExchange exchange, Integer code) throws IOException {
+    private void sendResponse(HttpExchange exchange, Integer code, String body) throws IOException {
+        byte[] bodyBytes = body.getBytes(StandardCharsets.UTF_8);
+        exchange.sendResponseHeaders(code, bodyBytes.length);
+        exchange.getResponseBody().write(bodyBytes);
+        exchange.close();
+    }
+
+    private void sendResponse(HttpExchange exchange, Integer code) throws IOException {
         exchange.sendResponseHeaders(code, 0);
         exchange.close();
     }

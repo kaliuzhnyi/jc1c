@@ -5,8 +5,9 @@ import com.google.gson.*;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
-public class JResponse {
+public final class JResponse {
 
     private HashMap<String, Object> parameters;
 
@@ -55,6 +56,7 @@ public class JResponse {
     public String toJson() {
         return new GsonBuilder()
                 .registerTypeAdapter(JResponse.class, new JResponseTypeAdapter())
+                .serializeNulls()
                 .create()
                 .toJson(this);
     }
@@ -66,31 +68,39 @@ public class JResponse {
 
             JsonObject jsonObject = new JsonObject();
 
-            JsonElement resultJsonObject = JsonNull.INSTANCE;
-            if (jResponse.hasParameters()) {
+            if (!jResponse.hasParameters()) {
+                serializeParameter(jsonObject, "result", null, jsonSerializationContext);
+            } else if (jResponse.getParameters().containsKey("result")) {
+                serializeParameter(jsonObject, "result", jResponse.getParameters().get("result"), jsonSerializationContext);
+            } else {
+
                 JsonObject parametersJsonObject = new JsonObject();
-                for (Map.Entry<String, Object> entry : jResponse.getParameters().entrySet()) {
+                jResponse.getParameters().entrySet().stream().forEach(entry -> {
+                    serializeParameter(parametersJsonObject, entry.getKey(), entry.getValue(), jsonSerializationContext);
+                });
 
-                    Object value = entry.getValue();
-                    if (value instanceof Boolean) {
-                        parametersJsonObject.addProperty(entry.getKey(), (Boolean) entry.getValue());
-                    } else if (value instanceof Number) {
-                        parametersJsonObject.addProperty(entry.getKey(), (Number) entry.getValue());
-                    } else if (value instanceof String) {
-                        parametersJsonObject.addProperty(entry.getKey(), (String) entry.getValue());
-                    } else if (value instanceof JResponse) {
-                        parametersJsonObject.add(entry.getKey(), jsonSerializationContext.serialize(value));
-                    }
-
-                }
-
-                resultJsonObject = parametersJsonObject;
+                jsonObject.add("result", parametersJsonObject);
             }
-
-            jsonObject.add("result", resultJsonObject);
 
             return jsonObject;
         }
+
+        private void serializeParameter(JsonObject jsonObject, String key, Object value, JsonSerializationContext jsonSerializationContext) {
+
+            if (Objects.isNull(value)) {
+                jsonObject.add(key, JsonNull.INSTANCE);
+            } else if (value instanceof Boolean) {
+                jsonObject.addProperty(key, (Boolean) value);
+            } else if (value instanceof Number) {
+                jsonObject.addProperty(key, (Number) value);
+            } else if (value instanceof String) {
+                jsonObject.addProperty(key, (String) value);
+            } else if (value instanceof JResponse) {
+                jsonObject.add(key, jsonSerializationContext.serialize(value));
+            }
+
+        }
+
 
     }
 
