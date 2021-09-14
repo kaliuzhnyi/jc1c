@@ -5,6 +5,7 @@ import com.google.gson.*;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public final class JRequest {
 
@@ -23,6 +24,10 @@ public final class JRequest {
 
     public boolean hasMethodName() {
         return !methodName.isBlank();
+    }
+
+    public boolean checkMethodName(String methodName) {
+        return this.methodName.equalsIgnoreCase(methodName);
     }
 
     private void setMethodName(String methodName) {
@@ -47,11 +52,33 @@ public final class JRequest {
         return parameters.size();
     }
 
+    public boolean checkParametersCount(Integer count) {
+        return getParametersCount().equals(count);
+    }
+
     public List<Class<?>> getParameterTypes() {
         List<Class<?>> result = new ArrayList<>();
         getParameters().stream().forEach(parameter -> result.add(parameter.getClass()));
         return result;
     }
+
+    public boolean checkParameterTypes(List<Class<?>> parameterTypesForCheck) {
+
+        if (Objects.isNull(parameterTypesForCheck)) {
+            return false;
+        }
+
+        List<Class<?>> parameterTypes = getParameterTypes();
+        for (int i = 0; i < parameterTypesForCheck.size(); i++) {
+            if (!parameterTypesForCheck.get(i).equals(parameterTypes.get(i))) {
+                return false;
+            }
+        }
+
+        return true;
+
+    }
+
 
     public static JRequest fromJson(String json) {
         return new GsonBuilder()

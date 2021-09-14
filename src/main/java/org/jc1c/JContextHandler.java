@@ -61,9 +61,10 @@ public final class JContextHandler implements HttpHandler {
                     .filter(method -> {
                         JHandler jHandler = method.getAnnotation(JHandler.class);
                         return !Objects.isNull(jHandler)
-                                && jHandler.methodName().equalsIgnoreCase(request.getMethodName())
-                                && method.getParameterCount() == request.getParametersCount()
-                                && Arrays.equals(method.getParameterTypes(), request.getParameterTypes().toArray());
+                                && request.checkMethodName(jHandler.methodName())
+                                && request.checkParametersCount(method.getParameterCount())
+                                && request.checkParameterTypes(List.of(method.getParameterTypes()));
+                        // Arrays.equals(method.getParameterTypes(), request.getParameterTypes().toArray())
                     }).collect(Collectors.toList());
 
             if (!(methods.size() > 0)) {
@@ -95,6 +96,7 @@ public final class JContextHandler implements HttpHandler {
     public void handleDelete(HttpExchange exchange) throws IOException {
         sendResponse(exchange, 200);
         JServer.getInstance().stop();
+        System.exit(0);
     }
 
     public void handleUnknown(HttpExchange exchange) throws IOException {
