@@ -93,6 +93,9 @@ public final class JRequest {
 
     private static class JRequestTypeAdapter implements JsonDeserializer<JRequest> {
 
+        private static final String JSON_ELEMENT_NAME_METHOD = "method";
+        private static final String JSON_ELEMENT_NAME_PARAMETERS = "parameters";
+
         @Override
         public JRequest deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 
@@ -103,14 +106,14 @@ public final class JRequest {
             }
 
             JsonObject jsonObject = jsonElement.getAsJsonObject();
-            if (jsonObject.has("method")) {
-                request.setMethodName(jsonObject.get("method").getAsString());
+            if (jsonObject.has(JSON_ELEMENT_NAME_METHOD)) {
+                request.setMethodName(jsonObject.get(JSON_ELEMENT_NAME_METHOD).getAsString());
             }
 
-            if (jsonObject.has("parameters")
-                    && jsonObject.get("parameters").isJsonArray()) {
+            if (jsonObject.has(JSON_ELEMENT_NAME_PARAMETERS)
+                    && jsonObject.get(JSON_ELEMENT_NAME_PARAMETERS).isJsonArray()) {
 
-                JsonArray parametersJsonArray = jsonObject.getAsJsonArray("parameters");
+                JsonArray parametersJsonArray = jsonObject.getAsJsonArray(JSON_ELEMENT_NAME_PARAMETERS);
                 for (JsonElement element : parametersJsonArray) {
 
                     if (!element.isJsonPrimitive()) {
