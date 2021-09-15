@@ -8,9 +8,15 @@ import java.time.Instant;
 @JHandlerControllers
 public class CounterHandlers {
 
-    @JHandler(methodName = "plus")
+    @JHandler(methodName = "plus double")
     public Integer methodPlus(Double value) {
         Counter.getInstance().plusIndex((int) value.doubleValue());
+        return Counter.getInstance().getIndex();
+    }
+
+    @JHandler(methodName = "plus long")
+    public Integer methodPlus1(Long value) {
+        Counter.getInstance().plusIndex(value.intValue());
         return Counter.getInstance().getIndex();
     }
 
@@ -23,6 +29,12 @@ public class CounterHandlers {
     @JHandler(methodName = "minus")
     public Integer methodMinus(Double value) {
         Counter.getInstance().minusIndex((int) value.doubleValue());
+        return Counter.getInstance().getIndex();
+    }
+
+    @JHandler(methodName = "minus long")
+    public Integer methodMinus1(Long value) {
+        Counter.getInstance().minusIndex(value.intValue());
         return Counter.getInstance().getIndex();
     }
 
