@@ -3,6 +3,9 @@ package org.jc1c;
 import com.google.gson.*;
 
 import java.lang.reflect.Type;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -118,9 +121,25 @@ public final class JRequest {
                     if (primitive.isBoolean()) {
                         request.addParameters(primitive.getAsBoolean());
                     } else if (primitive.isNumber()) {
-                        request.addParameters(primitive.getAsDouble());
+
+                        Double doubleValue = primitive.getAsDouble();
+                        if (doubleValue % 1 > 0.) {
+                            request.addParameters(primitive.getAsDouble());
+                        } else {
+                            request.addParameters(primitive.getAsLong());
+                        }
+
                     } else if (primitive.isString()) {
-                        request.addParameters(primitive.getAsString());
+
+                        String stringValue = primitive.getAsString();
+
+                        try {
+                            Instant instant = Instant.parse(stringValue);
+                            request.addParameters(instant);
+                        } catch (DateTimeParseException e) {
+                            request.addParameters(stringValue);
+                        }
+
                     }
 
                 }

@@ -1,11 +1,11 @@
 package org.jc1c;
 
+import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.jc1c.annotations.JHandler;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -15,8 +15,15 @@ import java.util.stream.Collectors;
 
 public final class JContextHandler implements HttpHandler {
 
+    private final JServer jServer = JServer.getInstance();
+
     @Override
     public void handle(HttpExchange exchange) throws IOException {
+
+        if (jServer.hasApiKey() && !checkApiKey(exchange)) {
+            sendResponse(exchange, 401);
+            return;
+        }
 
         JMethods jMethod = JMethods.valueOf(exchange.getRequestMethod());
         switch (jMethod) {
@@ -64,7 +71,6 @@ public final class JContextHandler implements HttpHandler {
                                 && request.checkMethodName(jHandler.methodName())
                                 && request.checkParametersCount(method.getParameterCount())
                                 && request.checkParameterTypes(List.of(method.getParameterTypes()));
-                        // Arrays.equals(method.getParameterTypes(), request.getParameterTypes().toArray())
                     }).collect(Collectors.toList());
 
             if (!(methods.size() > 0)) {
@@ -104,6 +110,15 @@ public final class JContextHandler implements HttpHandler {
     }
 
 
+    private boolean checkApiKey(HttpExchange exchange) {
+        Headers headers = exchange.getRequestHeaders();
+        if (!headers.containsKey(JServer.DEFAULT_HTTP_SERVER_APIKEY_HEADER)) {
+            return false;
+        }
+        return jServer.checkApiKey(headers.getFirst(JServer.DEFAULT_HTTP_SERVER_APIKEY_HEADER));
+    }
+
+
     private void sendResponseMethodNotFound(HttpExchange exchange) throws IOException {
         sendResponse(exchange, 404);
     }
@@ -115,6 +130,7 @@ public final class JContextHandler implements HttpHandler {
     private void sendResponseMethodInvoked(HttpExchange exchange) throws IOException {
         sendResponse(exchange, 200);
     }
+
 
     private void sendResponse(HttpExchange exchange, Integer code, String body) throws IOException {
         byte[] bodyBytes = body.getBytes(StandardCharsets.UTF_8);

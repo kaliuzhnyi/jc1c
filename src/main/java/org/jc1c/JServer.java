@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Executors;
 
@@ -12,11 +13,15 @@ public final class JServer {
 
     private static final String DEFAULT_HTTP_SERVER_HOSTNAME = "localhost";
     private static final Integer DEFAULT_HTTP_SERVER_PORT = 8080;
+    public static final String DEFAULT_HTTP_SERVER_APIKEY_HEADER = "API-key";
+
     private static final Integer DEFAULT_HTTP_SERVER_BACKLOG = 3;
     private static final Integer DEFAULT_HTTP_SERVER_THREAD_POOL = 1;
 
     private String hostname;
     private Integer port;
+    private String apiKey;
+
     private Integer backlog;
     private Integer threadPool;
 
@@ -54,12 +59,23 @@ public final class JServer {
         }
 
         public Builder withHostname(String hostname) {
-            jServer.hostname = hostname;
+            if (!Objects.isNull(hostname)) {
+                jServer.hostname = hostname;
+            }
             return this;
         }
 
         public Builder withPort(Integer port) {
-            jServer.port = port;
+            if (!Objects.isNull(port)) {
+                jServer.port = port;
+            }
+            return this;
+        }
+
+        public Builder withApiKey(String apiKey) {
+            if (!Objects.isNull(apiKey)) {
+                jServer.apiKey = apiKey;
+            }
             return this;
         }
 
@@ -98,6 +114,7 @@ public final class JServer {
         return !handlerControllers.isEmpty();
     }
 
+
     public String getHostname() {
         return hostname;
     }
@@ -105,6 +122,23 @@ public final class JServer {
     public Integer getPort() {
         return port;
     }
+
+
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public boolean hasApiKey() {
+        return !Objects.isNull(apiKey) && !apiKey.isEmpty();
+    }
+
+    public boolean checkApiKey(String apiKeyFoCheck) {
+        if (!hasApiKey()) {
+            return false;
+        }
+        return apiKey.equals(apiKeyFoCheck);
+    }
+
 
     public Integer getBacklog() {
         return backlog;
