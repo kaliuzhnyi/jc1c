@@ -17,7 +17,7 @@
 
 ## Использование на стороне Java
 Для подключения **jc1c** в ваш проект вам необходимо использовать **JitPack**,
-следуйте инструкции на официальном сайте - [ссылка](https://jitpack.io/#kaliuzhnyi/jc1c/1.0-SNAPSHOT "https://jitpack.io/#kaliuzhnyi/jc1c/1.0-SNAPSHOT")
+следуйте инструкции на официальном сайте - [ссылка](https://jitpack.io/#kaliuzhnyi/jc1c/v1.0.1 "https://jitpack.io/#kaliuzhnyi/jc1c/v1.0.1")
 
 После этого в main-методе вашего jar вам необходимо:
 1. Создать объект сервера и запустить его(сервер)
