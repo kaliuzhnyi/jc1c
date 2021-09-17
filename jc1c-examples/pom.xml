@@ -5,7 +5,7 @@
     <parent>
         <artifactId>jc1c</artifactId>
         <groupId>org.jc1c</groupId>
-        <version>1.0.1</version>
+        <version>v1.0.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -31,7 +31,7 @@
         <dependency>
             <groupId>com.github.kaliuzhnyi</groupId>
             <artifactId>jc1c</artifactId>
-            <version>1.0.1</version>
+            <version>v1.0.1</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
