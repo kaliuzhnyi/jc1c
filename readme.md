@@ -49,9 +49,9 @@ public class MyApp {
 @JHandlerControllers
 public class MyAppHandlers {
     @JHandler(methodName = "say_hello")
-    public String methodSayHello(Integer value) {
-        Integer resultValue = value * value;
-        String resultText = "Hello. The result is - " + resultValue;
+    public String methodSayHello(Long value, String name) {
+        Long resultValue = value * value;
+        String resultText = "Hello" + name + ". The result is - " + resultValue;
         return resultText;
     }
 }
@@ -61,7 +61,14 @@ public class MyAppHandlers {
 // - при обработке запроса будут учитываться только те методы которые помечены фннотацией - JHandler
 //   в аннотациие необходимо указать имя метода, именно это имя метода необходимо указывать при 
 //   совершении запроса из 1С.
-// - все, дальше в этом классе и медотах обработчика можно делать все что угодно ;) 
+// - все, дальше в этом классе и медотах обработчика можно делать все что угодно ;)
+
+// Важные дополнения:
+// - jc1c обрабатывает и передает в ваш метод-обработчик, в примере это метод - public String methodSayHello(Long value, String name)
+//   только параметры следующих типов Long, Double, Boolean, String, Instant
+// - параметры из 1С должны передоваться именно в той последжовательности в которой они указаны
+//   в методе обработчике, в примере это метод - public String methodSayHello(Long value, String name)
+
 ```
 3. Скомпилировать jar, и любім доступным способ хранить двоичные данные jar в 1С, чтобы их(двоичные данные)
 передавать в метод библиотеки **JКоннектор**.
