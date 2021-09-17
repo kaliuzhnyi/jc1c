@@ -8,7 +8,7 @@
     <groupId>org.jc1c</groupId>
     <artifactId>jc1c</artifactId>
     <packaging>pom</packaging>
-    <version>v1.0.1</version>
+    <version>1.0.1</version>
 
     <name>jc1c</name>
     <url>https://github.com/kaliuzhnyi/jc1c</url>
