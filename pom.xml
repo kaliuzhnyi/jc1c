@@ -8,7 +8,7 @@
     <groupId>org.jc1c</groupId>
     <artifactId>jc1c</artifactId>
     <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <modules>
         <module>jc1c-examples</module>
     </modules>
