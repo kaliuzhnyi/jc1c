@@ -18,6 +18,7 @@
 ## Использование на стороне Java
 Для подключения **jc1c** в ваш проект вам необходимо использовать **JitPack**,
 следуйте инструкции на официальном сайте - [ссылка](https://jitpack.io/#kaliuzhnyi/jc1c/1.0.1 "https://jitpack.io/#kaliuzhnyi/jc1c/1.0.1")
+
 Посмотреть примеры того как используется библиотека можно по [ссылке](https://github.com/kaliuzhnyi/jc1c-examples "https://github.com/kaliuzhnyi/jc1c-examples")
 
 После этого в main-методе вашего jar вам необходимо:

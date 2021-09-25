@@ -97,6 +97,8 @@ public final class JResponse {
                 jsonObject.addProperty(key, (String) value);
             } else if (value instanceof JResponse) {
                 jsonObject.add(key, jsonSerializationContext.serialize(value));
+            } else {
+                jsonObject.add(key, jsonSerializationContext.serialize(value));
             }
 
         }
