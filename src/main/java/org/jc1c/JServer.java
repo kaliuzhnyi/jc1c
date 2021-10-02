@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -64,24 +65,36 @@ public final class JServer {
             jServer = getInstance();
         }
 
-        public Builder withHostname(String hostname) {
-            if (Objects.nonNull(hostname)) {
-                jServer.hostname = hostname;
+        public Builder withArgs(String... args) {
+
+            if (args.length >= 1 && !args[0].isBlank()) {
+                withHostname(args[0]);
+                if (args.length >= 2 && !args[1].isBlank()) {
+                    withPort(Integer.valueOf(args[1]));
+                    if (args.length >= 3 && !args[2].isBlank()) {
+                        withApiKey(args[2]);
+                        if (args.length >=4 && !args[3].isBlank()) {
+                            withHandlersProcessingTimeController(Long.valueOf(args[3]));
+                        }
+                    }
+                }
             }
+
+            return this;
+        }
+
+        public Builder withHostname(String hostname) {
+            jServer.hostname = hostname;
             return this;
         }
 
         public Builder withPort(Integer port) {
-            if (Objects.nonNull(port)) {
-                jServer.port = port;
-            }
+            jServer.port = port;
             return this;
         }
 
         public Builder withApiKey(String apiKey) {
-            if (Objects.nonNull(apiKey)) {
-                jServer.apiKey = apiKey;
-            }
+            jServer.apiKey = apiKey;
             return this;
         }
 
@@ -101,9 +114,7 @@ public final class JServer {
         }
 
         public Builder withHandlersProcessingTimeController(Long limitTime) {
-            if (Objects.nonNull(limitTime)) {
-                jServer.handlersProcessingTimeController = jServer.new HandlersProcessingTimeController(limitTime);
-            }
+            jServer.handlersProcessingTimeController = jServer.new HandlersProcessingTimeController(limitTime);
             return this;
         }
 

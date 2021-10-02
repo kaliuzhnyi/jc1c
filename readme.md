@@ -24,7 +24,7 @@
 
 ## Использование на стороне Java
 Для подключения **jc1c** в ваш проект вам необходимо использовать **JitPack**,
-следуйте инструкции на официальном сайте - [ссылка](https://jitpack.io/#kaliuzhnyi/jc1c/1.0.5)
+следуйте инструкции на официальном сайте - [ссылка](https://jitpack.io/#kaliuzhnyi/jc1c/1.0.6)
 
 Посмотреть примеры того как используется библиотека можно по [ссылке](https://github.com/kaliuzhnyi/jc1c-examples "https://github.com/kaliuzhnyi/jc1c-examples")
 
@@ -58,6 +58,24 @@ public class MyApp {
 //    или пока его не остановят или пока не упадет с ошибкой и т.д.
 // .withHandlersController(MyAppHandlers.class) - указание класса в котором содержатся методы-обработчики запросов,
 //    это единственный обязательный метод в билдере.
+
+// Чтобы передать управление основными параметрами на строну 1С, необходимо использовать методы билдера - withArgs().
+// Данный метод заменяет собой методы: withHostname(), withPort(), withApiKey(), withHandlersProcessingTimeController().
+// Преимущество использования этого метода - уменьшение кода и избавление от лишних проверок аргументов main-метода.
+// Пример:
+
+public class MyApp {
+    public static void main(String[] args) throws IOException {
+        JServer.builder()
+                .withArgs(args)
+                .withBacklog(3)
+                .withThreadPool(3)
+                .withHandlersController(MyAppHandlers.class)
+                .build()
+                .start();
+    }
+}
+
 ```
 2. Создать класс с методами которые будут обрабатывать входящие запросы, например:
 ``` java

@@ -7,7 +7,7 @@
 
     <groupId>org.jc1c</groupId>
     <artifactId>jc1c</artifactId>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
     <packaging>jar</packaging>
 
     <name>jc1c</name>
