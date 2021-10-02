@@ -88,7 +88,7 @@ public final class JContextHandler implements HttpHandler {
 
             try {
 
-                jServer.getHandlersProcessingTimeController().fixHandlerProcessingBegin();
+                jServer.fixHandlerProcessingBegin();
 
                 Object obj = handlersController.getDeclaredConstructor().newInstance();
                 Method method = methods.get(0);
@@ -103,7 +103,7 @@ public final class JContextHandler implements HttpHandler {
                 sendResponseMethodNotCreated(exchange);
                 return;
             } finally {
-                jServer.getHandlersProcessingTimeController().fixHandlerProcessingEnd();
+                jServer.fixHandlerProcessingEnd();
             }
 
         }

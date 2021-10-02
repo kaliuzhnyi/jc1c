@@ -219,6 +219,19 @@ public final class JServer {
         return handlersProcessingTimeController;
     }
 
+    public void fixHandlerProcessingBegin() {
+        if (Objects.nonNull(handlersProcessingTimeController)) {
+            handlersProcessingTimeController.fixHandlerProcessingBegin();
+        }
+    }
+
+    public void fixHandlerProcessingEnd() {
+        if (Objects.nonNull(handlersProcessingTimeController)) {
+            handlersProcessingTimeController.fixHandlerProcessingEnd();
+        }
+    }
+
+
     public void start() {
         httpServer.start();
 
