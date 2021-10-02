@@ -20,12 +20,17 @@ public final class JContextHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
 
+        JMethods jMethod = JMethods.valueOf(exchange.getRequestMethod());
+        if (jMethod.equals(JMethods.HEAD)) {
+            handleHead(exchange);
+            return;
+        }
+
         if (jServer.hasApiKey() && !checkApiKey(exchange)) {
             sendResponse(exchange, 401);
             return;
         }
 
-        JMethods jMethod = JMethods.valueOf(exchange.getRequestMethod());
         switch (jMethod) {
             case GET:
                 handleGet(exchange);
@@ -40,6 +45,10 @@ public final class JContextHandler implements HttpHandler {
                 handleUnknown(exchange);
         }
 
+    }
+
+    public void handleHead(HttpExchange exchange) throws IOException {
+        sendResponse(exchange, 200);
     }
 
     public void handleGet(HttpExchange exchange) throws IOException {
@@ -79,6 +88,8 @@ public final class JContextHandler implements HttpHandler {
 
             try {
 
+                jServer.getHandlersProcessingTimeController().fixHandlerProcessingBegin();
+
                 Object obj = handlersController.getDeclaredConstructor().newInstance();
                 Method method = methods.get(0);
 
@@ -91,6 +102,8 @@ public final class JContextHandler implements HttpHandler {
                 e.printStackTrace();
                 sendResponseMethodNotCreated(exchange);
                 return;
+            } finally {
+                jServer.getHandlersProcessingTimeController().fixHandlerProcessingEnd();
             }
 
         }
@@ -102,7 +115,6 @@ public final class JContextHandler implements HttpHandler {
     public void handleDelete(HttpExchange exchange) throws IOException {
         sendResponse(exchange, 200);
         JServer.getInstance().stop();
-        System.exit(0);
     }
 
     public void handleUnknown(HttpExchange exchange) throws IOException {
@@ -140,7 +152,7 @@ public final class JContextHandler implements HttpHandler {
     }
 
     private void sendResponse(HttpExchange exchange, Integer code) throws IOException {
-        exchange.sendResponseHeaders(code, 0);
+        exchange.sendResponseHeaders(code, -1);
         exchange.close();
     }
 

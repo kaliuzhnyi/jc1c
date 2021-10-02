@@ -39,6 +39,7 @@ public class MyApp {
                 .withApiKey("MySuperSecretKey")
                 .withBacklog(3)
                 .withThreadPool(3)
+                .withHandlersProcessingTimeController(600)
                 .withHandlersController(MyAppHandlers.class)
                 .build()
                 .start();
@@ -51,7 +52,12 @@ public class MyApp {
 // .withApiKey() - ключ для отсечения лишних запросов(если такие будут)
 // .withBacklog() - количество запросов в очереди, значение по умолчанию 3
 // .withThreadPool() - количество потоков для работы сервера
-// .withHandlersController(MyAppHandlers.class) - указание класса в котором содержатся методы-обработчики запросов
+// .withHandlersProcessingTimeController() - количество секунд безтействия,
+//    т.е. если после последнего входящего запроса пройдет указанное количество секунд то сервер
+//    прекратит свою работу, если не указавыть этот параметр то сервер будет работать вечно
+//    или пока его не остановят или пока не упадет с ошибкой и т.д.
+// .withHandlersController(MyAppHandlers.class) - указание класса в котором содержатся методы-обработчики запросов,
+//    это единственный обязательный метод в билдере.
 ```
 2. Создать класс с методами которые будут обрабатывать входящие запросы, например:
 ``` java
