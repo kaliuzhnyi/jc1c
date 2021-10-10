@@ -58,7 +58,7 @@ public class JServerOutMessage {
     public static void print(JServerOutMessage ... outMessages) {
 
         StringBuffer textBuffer = new StringBuffer();
-        Arrays.stream(outMessages).toList().forEach(textBuffer::append);
+        Arrays.stream(outMessages).forEach(textBuffer::append);
         System.out.println(textBuffer);
 
     }
@@ -67,8 +67,12 @@ public class JServerOutMessage {
     public String toString() {
 
         StringBuffer textBuffer = new StringBuffer();
-        textBuffer.append("@Message: " + type + "\n");
-        properties.entrySet().forEach(entry -> textBuffer.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n"));
+        textBuffer.append("@Message: ").append(type).append("\n");
+        properties.entrySet().forEach(entry -> textBuffer
+                .append(entry.getKey())
+                .append(": ")
+                .append(entry.getValue())
+                .append("\n"));
 
         return textBuffer.toString();
     }
