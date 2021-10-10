@@ -5,10 +5,7 @@ import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Executors;
 
 public final class JServer {
@@ -120,9 +117,15 @@ public final class JServer {
 
         public JServer build() throws IOException {
 
-            jServer.httpServer = HttpServer.create(new InetSocketAddress(jServer.hostname, jServer.port), jServer.backlog);
+            InetSocketAddress inetSocketAddress = new InetSocketAddress(jServer.hostname, jServer.port);
+
+            jServer.httpServer = HttpServer.create(inetSocketAddress, jServer.backlog);
             jServer.httpServer.setExecutor(Executors.newFixedThreadPool(jServer.threadPool));
             jServer.httpServer.createContext("/", new JContextHandler());
+
+            if (jServer.port == 0) {
+                jServer.port = jServer.httpServer.getAddress().getPort();
+            }
 
             return jServer;
         }
@@ -226,10 +229,6 @@ public final class JServer {
     }
 
 
-    public HandlersProcessingTimeController getHandlersProcessingTimeController() {
-        return handlersProcessingTimeController;
-    }
-
     public void fixHandlerProcessingBegin() {
         if (Objects.nonNull(handlersProcessingTimeController)) {
             handlersProcessingTimeController.fixHandlerProcessingBegin();
@@ -252,6 +251,14 @@ public final class JServer {
             thread.setPriority(Thread.MIN_PRIORITY);
             thread.start();
         }
+
+        JServerOutMessage connectionMessage = JServerOutMessage.builder(JServerOutMessageTypes.CONNECTION_DATA)
+                .withProperties("Host", httpServer.getAddress().getHostName())
+                .withProperties("Port", Integer.valueOf(httpServer.getAddress().getPort()).toString())
+                .build();
+
+        JServerOutMessage.print(connectionMessage);
+
     }
 
     public void stop() {
